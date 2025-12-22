@@ -73,6 +73,28 @@ function MeetingSetup({ onSetupComplete }: { onSetupComplete: () => void }) {
     }
   };
 
+  const handleJoin = async () => {
+    if (isCandidate) {
+      setIsInstructionsOpen(true);
+    } else {
+      await call.join();
+      onSetupComplete();
+    }
+  };
+
+  const confirmJoin = async () => {
+    if (isAcknowledged) {
+      try {
+        await document.documentElement.requestFullscreen();
+      } catch (err) {
+        console.error("Error attempting to enable full-screen mode:", err);
+      }
+      setIsInstructionsOpen(false);
+      await call.join();
+      onSetupComplete();
+    }
+  };
+
   return (
     <div className="h-[calc(100vh-65px)] flex items-center justify-center p-6 bg-background overflow-hidden">
       <div className="w-full max-w-[1200px] mx-auto h-full">
