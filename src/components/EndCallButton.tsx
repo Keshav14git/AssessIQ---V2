@@ -24,6 +24,10 @@ function EndCallButton() {
   if (!isMeetingOwner) return null;
 
   const endCall = async () => {
+    // Add confirmation to prevent accidental clicks and debug "auto" issues
+    const confirmed = window.confirm("Are you sure you want to end the meeting for everyone?");
+    if (!confirmed) return;
+
     try {
       await call.endCall();
 

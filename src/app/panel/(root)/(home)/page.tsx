@@ -8,7 +8,7 @@ import { useState } from "react";
 import { api } from "../../../../../convex/_generated/api";
 import { useRouter } from "next/navigation";
 import MeetingModal from "@/components/MeetingModal";
-import LoaderUI from "@/components/LoaderUI";
+import LogoLoader from "@/components/ui/LogoLoader";
 import { Loader2Icon } from "lucide-react";
 import MeetingCard from "@/components/MeetingCard";
 
@@ -35,7 +35,7 @@ export default function Home() {
     }
   };
 
-  if (isLoading) return <LoaderUI />;
+  if (isLoading) return <LogoLoader />;
 
   return (
     <div className="container max-w-7xl mx-auto p-6">

@@ -1,6 +1,6 @@
 import { useUser } from "@clerk/nextjs";
 import { useStreamVideoClient } from "@stream-io/video-react-sdk";
-import { useMutation, useQuery } from "convex/react";
+import { useMutation, useQuery, useConvex, useAction } from "convex/react";
 import { useState } from "react";
 import { api } from "../../../../../convex/_generated/api";
 import toast from "react-hot-toast";
@@ -22,10 +22,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import UserInfo from "@/components/UserInfo";
-import { Loader2Icon, XIcon } from "lucide-react";
+import { Loader2Icon, XIcon, CalendarIcon, ClockIcon } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import { TIME_SLOTS } from "@/constants";
 import MeetingCard from "@/components/MeetingCard";
+
 
 function InterviewScheduleUI() {
   const client = useStreamVideoClient();
@@ -49,6 +50,30 @@ function InterviewScheduleUI() {
     interviewerIds: user?.id ? [user.id] : [],
   });
 
+  const convex = useConvex();
+  const searchCandidate = useMutation(api.users.getOrCreateUserByEmail);
+  const sendInvite = useAction(api.emails.sendCandidateInvite);
+
+  const [openAddCandidate, setOpenAddCandidate] = useState(false);
+  const [newCandidate, setNewCandidate] = useState({ email: "", name: "" });
+
+  const handleAddCandidate = async () => {
+    if (!newCandidate.email) return toast.error("Email is required");
+    try {
+      const user = await searchCandidate({
+        email: newCandidate.email,
+        name: newCandidate.name
+      });
+      if (!user) throw new Error("Could not create user");
+      setFormData({ ...formData, candidateId: user.clerkId });
+      setOpenAddCandidate(false);
+      setNewCandidate({ email: "", name: "" });
+      toast.success(`Selected ${user.name}`);
+    } catch (e) {
+      toast.error("Failed to add candidate");
+    }
+  };
+
   const scheduleMeeting = async () => {
     if (!client || !user) return;
     if (!formData.candidateId || formData.interviewerIds.length === 0) {
@@ -63,6 +88,21 @@ function InterviewScheduleUI() {
       const [hours, minutes] = time.split(":");
       const meetingDate = new Date(date);
       meetingDate.setHours(parseInt(hours), parseInt(minutes), 0);
+      const startTime = meetingDate.getTime();
+
+      // 1. Conflict Detection
+      const isBusy = await convex.query(api.interviews.checkAvailability, {
+        startTime,
+        userIds: [...interviewerIds, candidateId]
+      });
+
+      if (isBusy) {
+        const confirm = window.confirm("⚠️ Conflict Warning: One or more participants have a meeting at this time.\n\nDo you want to proceed anyway?");
+        if (!confirm) {
+          setIsCreating(false);
+          return;
+        }
+      }
 
       const id = crypto.randomUUID();
       const call = client.call("default", id);
@@ -80,12 +120,26 @@ function InterviewScheduleUI() {
       await createInterview({
         title,
         description,
-        startTime: meetingDate.getTime(),
+        startTime,
         status: "upcoming",
         streamCallId: id,
         candidateId,
         interviewerIds,
       });
+
+      // 2. Send Invitation Email
+      const candidateUser = users?.find((u) => u.clerkId === candidateId);
+      if (candidateUser && candidateUser.email) {
+        const tempPassword = Math.random().toString(36).slice(-8);
+        await sendInvite({
+          email: candidateUser.email,
+          name: candidateUser.name || "Candidate",
+          date: meetingDate.toLocaleDateString(),
+          time: time,
+          password: tempPassword
+        });
+        toast.success("Invitation email sent!");
+      }
 
       setOpen(false);
       toast.success("Meeting scheduled successfully!");
@@ -141,147 +195,192 @@ function InterviewScheduleUI() {
         </div>
 
         {/* DIALOG */}
-
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
             <Button size="lg">Schedule Interview</Button>
           </DialogTrigger>
 
-          <DialogContent className="sm:max-w-[500px] h-[calc(100vh-200px)] overflow-auto">
-            <DialogHeader>
-              <DialogTitle>Schedule Interview</DialogTitle>
-            </DialogHeader>
-            <div className="space-y-4 py-4">
-              {/* INTERVIEW TITLE */}
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Title</label>
-                <Input
-                  placeholder="Interview title"
-                  value={formData.title}
-                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                />
-              </div>
+          <DialogContent className="sm:max-w-4xl p-0 overflow-hidden bg-zinc-900 border-zinc-800">
+            {/* NO DEFAULT HEADER - CUSTOM HEADER */}
+            <div className="grid grid-cols-1 md:grid-cols-5 h-[80vh] md:h-[600px] overflow-hidden">
 
-              {/* INTERVIEW DESC */}
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Description</label>
-                <Textarea
-                  placeholder="Interview description"
-                  value={formData.description}
-                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  rows={3}
-                />
-              </div>
-
-              {/* CANDIDATE */}
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Candidate</label>
-                <Select
-                  value={formData.candidateId}
-                  onValueChange={(candidateId) => setFormData({ ...formData, candidateId })}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select candidate" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {candidates.map((candidate) => (
-                      <SelectItem key={candidate.clerkId} value={candidate.clerkId}>
-                        <UserInfo user={candidate} />
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {/* INTERVIEWERS */}
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Interviewers</label>
-                <div className="flex flex-wrap gap-2 mb-2">
-                  {selectedInterviewers.map((interviewer) => (
-                    <div
-                      key={interviewer.clerkId}
-                      className="inline-flex items-center gap-2 bg-secondary px-2 py-1 rounded-md text-sm"
-                    >
-                      <UserInfo user={interviewer} />
-                      {interviewer.clerkId !== user?.id && (
-                        <button
-                          onClick={() => removeInterviewer(interviewer.clerkId)}
-                          className="hover:text-destructive transition-colors"
-                        >
-                          <XIcon className="h-4 w-4" />
-                        </button>
-                      )}
-                    </div>
-                  ))}
+              {/* LEFT COLUMN: MEETING DETAILS (3/5 width) */}
+              <div className="md:col-span-3 p-6 md:p-8 space-y-6 overflow-y-auto custom-scrollbar border-r border-zinc-800 bg-zinc-950/50">
+                <div className="mb-6">
+                  <h2 className="text-xl font-bold text-white">Meeting Details</h2>
+                  <p className="text-sm text-zinc-400">Configure the interview specifics</p>
                 </div>
-                {availableInterviewers.length > 0 && (
-                  <Select onValueChange={addInterviewer}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Add interviewer" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {availableInterviewers.map((interviewer) => (
-                        <SelectItem key={interviewer.clerkId} value={interviewer.clerkId}>
-                          <UserInfo user={interviewer} />
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                )}
-              </div>
 
-              {/* DATE & TIME */}
-              <div className="flex gap-4">
-                {/* CALENDAR */}
+                {/* TITLE */}
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">Date</label>
-                  <Calendar
-                    mode="single"
-                    selected={formData.date}
-                    onSelect={(date) => date && setFormData({ ...formData, date })}
-                    disabled={(date) => date < new Date()}
-                    className="rounded-md border"
+                  <label className="text-xs font-medium text-zinc-400 uppercase tracking-wider">Title</label>
+                  <Input
+                    placeholder="e.g. Senior React Developer Interview"
+                    className="bg-zinc-900 border-zinc-700 focus:ring-green-500/20"
+                    value={formData.title}
+                    onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                   />
                 </div>
 
-                {/* TIME */}
-
+                {/* DESCRIPTION */}
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">Time</label>
-                  <Select
-                    value={formData.time}
-                    onValueChange={(time) => setFormData({ ...formData, time })}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select time" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {TIME_SLOTS.map((time) => (
-                        <SelectItem key={time} value={time}>
-                          {time}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <label className="text-xs font-medium text-zinc-400 uppercase tracking-wider">Description</label>
+                  <Textarea
+                    placeholder="Meeting agenda and instructions..."
+                    className="bg-zinc-900 border-zinc-700 focus:ring-green-500/20 resize-none"
+                    value={formData.description}
+                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                    rows={4}
+                  />
+                </div>
+
+                {/* CANDIDATE */}
+                <div className="space-y-2">
+                  <label className="text-xs font-medium text-zinc-400 uppercase tracking-wider flex justify-between items-center">
+                    Candidate
+                    <button className="text-green-400 hover:text-green-300 transition-colors text-xs normal-case" onClick={() => setOpenAddCandidate(!openAddCandidate)}>
+                      {openAddCandidate ? "Cancel" : "+ Add External"}
+                    </button>
+                  </label>
+
+                  {openAddCandidate ? (
+                    <div className="space-y-3 p-4 border border-zinc-800 rounded-lg bg-zinc-900/50 animate-in fade-in slide-in-from-top-2">
+                      <Input
+                        placeholder="Candidate Email"
+                        className="bg-zinc-950 border-zinc-800"
+                        value={newCandidate.email}
+                        onChange={(e) => setNewCandidate({ ...newCandidate, email: e.target.value })}
+                      />
+                      <Input
+                        placeholder="Candidate Name"
+                        className="bg-zinc-950 border-zinc-800"
+                        value={newCandidate.name}
+                        onChange={(e) => setNewCandidate({ ...newCandidate, name: e.target.value })}
+                      />
+                      <Button size="sm" onClick={handleAddCandidate} className="w-full">Confirm Add</Button>
+                    </div>
+                  ) : (
+                    <Select
+                      value={formData.candidateId}
+                      onValueChange={(candidateId) => setFormData({ ...formData, candidateId })}
+                    >
+                      <SelectTrigger className="bg-zinc-900 border-zinc-700">
+                        <SelectValue placeholder="Select candidate" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-zinc-900 border-zinc-800">
+                        {candidates.map((candidate) => (
+                          <SelectItem key={candidate.clerkId} value={candidate.clerkId}>
+                            <UserInfo user={candidate} />
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  )}
+                </div>
+
+                {/* INTERVIEWERS */}
+                <div className="space-y-2">
+                  <label className="text-xs font-medium text-zinc-400 uppercase tracking-wider">Interviewers</label>
+                  <div className="min-h-[42px] p-2 border border-zinc-700 rounded-md bg-zinc-900 flex flex-wrap gap-2">
+                    {selectedInterviewers.map((interviewer) => (
+                      <div
+                        key={interviewer.clerkId}
+                        className="inline-flex items-center gap-2 bg-zinc-800 px-2 py-1 rounded-md text-sm border border-zinc-700"
+                      >
+                        <UserInfo user={interviewer} />
+                        {interviewer.clerkId !== user?.id && (
+                          <button
+                            onClick={() => removeInterviewer(interviewer.clerkId)}
+                            className="text-zinc-500 hover:text-red-400 transition-colors"
+                          >
+                            <XIcon className="h-3 w-3" />
+                          </button>
+                        )}
+                      </div>
+                    ))}
+
+                    {availableInterviewers.length > 0 && (
+                      <Select onValueChange={addInterviewer}>
+                        <SelectTrigger className="w-[30px] h-[24px] p-0 border-none bg-transparent hover:bg-zinc-800 transition-colors rounded">
+                          <span className="text-zinc-400 text-lg leading-none flex justify-center w-full">+</span>
+                        </SelectTrigger>
+                        <SelectContent className="bg-zinc-900 border-zinc-800">
+                          {availableInterviewers.map((interviewer) => (
+                            <SelectItem key={interviewer.clerkId} value={interviewer.clerkId}>
+                              <UserInfo user={interviewer} />
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    )}
+                  </div>
                 </div>
               </div>
 
-              {/* ACTION BUTTONS */}
-              <div className="flex justify-end gap-3 pt-4">
-                <Button variant="outline" onClick={() => setOpen(false)}>
-                  Cancel
-                </Button>
-                <Button onClick={scheduleMeeting} disabled={isCreating}>
-                  {isCreating ? (
-                    <>
-                      <Loader2Icon className="mr-2 size-4 animate-spin" />
-                      Scheduling...
-                    </>
-                  ) : (
-                    "Schedule Interview"
-                  )}
-                </Button>
+              {/* RIGHT COLUMN: SCHEDULING (2/5 width) */}
+              <div className="md:col-span-2 bg-white/5 p-6 md:p-8 flex flex-col h-full border-l border-white/5 overflow-y-auto custom-scrollbar">
+
+                <div className="mb-6">
+                  <h2 className="text-xl font-bold text-white">Date & Time</h2>
+                  <p className="text-sm text-zinc-400">Select slot</p>
+                </div>
+
+                <div className="flex flex-col gap-6">
+                  {/* CALENDAR */}
+                  <div className="bg-zinc-900 p-3 rounded-lg border border-zinc-800">
+                    <Calendar
+                      mode="single"
+                      selected={formData.date}
+                      onSelect={(date) => date && setFormData({ ...formData, date })}
+                      disabled={(date) => date < new Date()}
+                      className="rounded-md"
+                      classNames={{
+                        day_selected: "bg-green-500 text-white hover:bg-green-600 focus:bg-green-600",
+                        day_today: "bg-zinc-800 text-zinc-100",
+                      }}
+                    />
+                  </div>
+
+                  {/* TIME SELECTION */}
+                  <div className="space-y-3">
+                    <label className="text-xs font-medium text-zinc-400 uppercase tracking-wider flex items-center gap-2">
+                      <ClockIcon className="w-3 h-3" /> Start Time
+                    </label>
+                    <div className="relative">
+                      <Input
+                        type="time"
+                        className="bg-zinc-900 border-zinc-700 focus:ring-green-500/20 p-3 h-12 text-lg font-medium"
+                        value={formData.time}
+                        onChange={(e) => setFormData({ ...formData, time: e.target.value })}
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* BOTTOM ACTIONS */}
+                <div className="pt-6 mt-6 border-t border-white/5 flex flex-col gap-3">
+                  <div className="flex justify-between text-sm text-zinc-400">
+                    <span>Selected:</span>
+                    <span className="text-white font-medium">{formData.date.toLocaleDateString()} at {formData.time}</span>
+                  </div>
+                  <Button
+                    onClick={scheduleMeeting}
+                    disabled={isCreating}
+                    className="w-full bg-green-500 hover:bg-green-600 text-black font-bold py-6"
+                  >
+                    {isCreating ? (
+                      <>
+                        <Loader2Icon className="mr-2 size-4 animate-spin" />
+                        Scheduling...
+                      </>
+                    ) : (
+                      "Confirm & Schedule"
+                    )}
+                  </Button>
+                </div>
+
               </div>
+
             </div>
           </DialogContent>
         </Dialog>

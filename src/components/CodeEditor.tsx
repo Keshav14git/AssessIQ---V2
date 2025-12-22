@@ -1,26 +1,89 @@
 import { CODING_QUESTIONS, LANGUAGES } from "@/constants";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "./ui/resizable";
 import { ScrollArea, ScrollBar } from "./ui/scroll-area";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { AlertCircleIcon, BookIcon, LightbulbIcon } from "lucide-react";
 import Editor from "@monaco-editor/react";
+import { useCall } from "@stream-io/video-react-sdk";
+import { useMutation, useQuery } from "convex/react";
+import { api } from "../../convex/_generated/api";
+import { useUserRole } from "@/hooks/useUserRole";
+import LogoLoader from "./ui/LogoLoader";
 
 function CodeEditor() {
-  const [selectedQuestion, setSelectedQuestion] = useState(CODING_QUESTIONS[0]);
-  const [language, setLanguage] = useState<"javascript" | "python" | "java">(LANGUAGES[0].id);
-  const [code, setCode] = useState(selectedQuestion.starterCode[language]);
+  const call = useCall();
+  const { isInterviewer } = useUserRole();
+  const streamCallId = call?.id;
 
-  const handleQuestionChange = (questionId: string) => {
-    const question = CODING_QUESTIONS.find((q) => q.id === questionId)!;
-    setSelectedQuestion(question);
-    setCode(question.starterCode[language]);
+  const interview = useQuery(api.interviews.getInterviewByStreamCallId, {
+    streamCallId: streamCallId || "",
+  });
+
+  const updateQuestion = useMutation(api.interviews.updateInterviewQuestion);
+  const updateLanguage = useMutation(api.interviews.updateInterviewLanguage);
+  const updateCode = useMutation(api.interviews.updateCode);
+
+  const [code, setCode] = useState("");
+
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Sync local code state with DB when DB changes (and we aren't typing? Simplified: just sync)
+  // Check if we need to handle "local override". For now, simple 1-way sync from DB -> State + Local edits -> DB
+  // Real-time collab usually assumes "Last write wins" or operational transform.
+  // For basic sync with debounce, we rely on the DB being the source of truth, 
+  // but we might flicker if we type fast. 
+  // However, for this MVP, we update local state only if we receive an update and we are not currently debouncing?
+  // Let's stick to the basic "useEffect update" pattern for now.
+
+  useEffect(() => {
+    if (interview?.code !== undefined) {
+      setCode(interview.code);
+    }
+  }, [interview?.code]);
+
+  if (!interview) return <LogoLoader />;
+
+  const customQuestions = interview.customCodingChallenges || [];
+  const allQuestions = customQuestions.length > 0 ? customQuestions : CODING_QUESTIONS;
+
+  const selectedQuestion = allQuestions.find(
+    (q) => q.id === interview.currentQuestionId
+  ) || allQuestions[0];
+
+  const language = (interview.language as "javascript" | "python" | "java") || "javascript";
+
+  const handleQuestionChange = async (questionId: string) => {
+    if (!isInterviewer) return;
+    const question = allQuestions.find((q) => q.id === questionId)!;
+
+    await updateQuestion({
+      id: interview._id,
+      questionId,
+      code: question.starterCode[language],
+    });
   };
 
-  const handleLanguageChange = (newLanguage: "javascript" | "python" | "java") => {
-    setLanguage(newLanguage);
-    setCode(selectedQuestion.starterCode[newLanguage]);
+  const handleLanguageChange = async (newLanguage: "javascript" | "python" | "java") => {
+    await updateLanguage({
+      id: interview._id,
+      language: newLanguage,
+    });
+  };
+
+  const handleCodeChange = (value: string | undefined) => {
+    if (value === undefined) return;
+    setCode(value);
+
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+
+    timeoutRef.current = setTimeout(async () => {
+      await updateCode({
+        id: interview._id,
+        code: value,
+      });
+    }, 1000);
   };
 
   return (
@@ -39,24 +102,28 @@ function CodeEditor() {
                     </h2>
                   </div>
                   <p className="text-sm text-muted-foreground">
-                    Choose your language and solve the problem
+                    {selectedQuestion.description.split("\n")[0]}
                   </p>
                 </div>
                 <div className="flex items-center gap-3">
-                  <Select value={selectedQuestion.id} onValueChange={handleQuestionChange}>
-                    <SelectTrigger className="w-[180px]">
-                      <SelectValue placeholder="Select question" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {CODING_QUESTIONS.map((q) => (
-                        <SelectItem key={q.id} value={q.id}>
-                          {q.title}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  {/* INTERVIEWER ONLY: SELECT QUESTION */}
+                  {isInterviewer && (
+                    <Select value={selectedQuestion.id} onValueChange={handleQuestionChange}>
+                      <SelectTrigger className="w-[180px]">
+                        <SelectValue placeholder="Select question" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {allQuestions.map((q: any) => (
+                          <SelectItem key={q.id} value={q.id}>
+                            {q.title} {q.id.startsWith("c") ? "(AI)" : ""}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  )}
 
-                  <Select value={language} onValueChange={handleLanguageChange}>
+                  {/* CANDIDATE ONLY: SELECT LANGUAGE (Visual logic handled by disabled) */}
+                  <Select value={language} onValueChange={handleLanguageChange} disabled={isInterviewer}>
                     <SelectTrigger className="w-[150px]">
                       {/* SELECT VALUE */}
                       <SelectValue>
@@ -111,7 +178,7 @@ function CodeEditor() {
                 <CardContent>
                   <ScrollArea className="h-full w-full rounded-md border">
                     <div className="p-4 space-y-4">
-                      {selectedQuestion.examples.map((example, index) => (
+                      {selectedQuestion.examples.map((example: any, index: number) => (
                         <div key={index} className="space-y-2">
                           <p className="font-medium text-sm">Example {index + 1}:</p>
                           <ScrollArea className="h-full w-full rounded-md">
@@ -143,7 +210,7 @@ function CodeEditor() {
                   </CardHeader>
                   <CardContent>
                     <ul className="list-disc list-inside space-y-1.5 text-sm marker:text-muted-foreground">
-                      {selectedQuestion.constraints.map((constraint, index) => (
+                      {selectedQuestion.constraints.map((constraint: string, index: number) => (
                         <li key={index} className="text-muted-foreground">
                           {constraint}
                         </li>
@@ -169,7 +236,7 @@ function CodeEditor() {
             language={language}
             theme="vs-dark"
             value={code}
-            onChange={(value) => setCode(value || "")}
+            onChange={handleCodeChange}
             options={{
               minimap: { enabled: false },
               fontSize: 18,

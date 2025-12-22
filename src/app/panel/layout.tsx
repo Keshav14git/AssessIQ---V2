@@ -1,78 +1,27 @@
-import type { Metadata } from "next";
-import localFont from "next/font/local";
-import "@stream-io/video-react-sdk/dist/css/styles.css";
-import "../globals.css";
 import { RedirectToSignIn, SignedIn, SignedOut } from "@clerk/nextjs";
-import ConvexClerkProvider from "@/components/providers/ConvexClerkProvider";
+
 import Navbar from "@/components/Navbar";
-import { ThemeProvider } from "@/components/providers/ThemeProvider";
-import { Toaster } from "react-hot-toast";
+import RoleGuard from "@/components/RoleGuard";
 
-const geistSans = localFont({
-  src: "./fonts/GeistVF.woff",
-  variable: "--font-geist-sans",
-  weight: "100 900",
-});
-const geistMono = localFont({
-  src: "./fonts/GeistMonoVF.woff",
-  variable: "--font-geist-mono",
-  weight: "100 900",
-});
-
-export const metadata: Metadata = {
-  title: "Assessiq - Next Generation Assessment Platform",
-  description: "Streamline your assessment process with Assessiq",
-};
-
-export default function RootLayout({
+export default function PanelLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  // Special case for the landing page route
-  if (typeof window !== 'undefined' && window.location.pathname === '/') {
-    return (
-      <html lang="en" suppressHydrationWarning>
-        <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-          >
-            {children}
-          </ThemeProvider>
-          <Toaster />
-        </body>
-      </html>
-    );
-  }
-
-  // Protected routes wrapped in ConvexClerkProvider
   return (
-    <ConvexClerkProvider>
-      <html lang="en" suppressHydrationWarning>
-        <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-          >
-            <SignedIn>
-              <div className="min-h-screen">
-                <Navbar />
-                <main className="px-4 sm:px-6 lg:px-8">{children}</main>
-              </div>
-            </SignedIn>
+    <>
+      <SignedIn>
+        <div className="min-h-screen">
+          <Navbar />
+          <RoleGuard>
+            <main className="px-4 sm:px-6 lg:px-8">{children}</main>
+          </RoleGuard>
+        </div>
+      </SignedIn>
 
-            <SignedOut>
-              <RedirectToSignIn />
-            </SignedOut>
-          </ThemeProvider>
-          <Toaster />
-        </body>
-      </html>
-    </ConvexClerkProvider>
+      <SignedOut>
+        <RedirectToSignIn />
+      </SignedOut>
+    </>
   );
 }

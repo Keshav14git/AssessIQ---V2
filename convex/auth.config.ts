@@ -1,7 +1,7 @@
 export default {
   providers: [
     {
-      domain: "https://flexible-pigeon-5.clerk.accounts.dev",
+      domain: "https://evident-frog-2.clerk.accounts.dev",
       applicationID: "convex",
     },
   ],

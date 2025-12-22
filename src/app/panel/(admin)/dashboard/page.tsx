@@ -5,7 +5,7 @@ import { useMutation, useQuery } from "convex/react";
 import { api } from "../../../../../convex/_generated/api";
 import { Doc, Id } from "../../../../../convex/_generated/dataModel";
 import toast from "react-hot-toast";
-import LoaderUI from "@/components/LoaderUI";
+import LogoLoader from "@/components/ui/LogoLoader";
 import { getCandidateInfo, groupInterviews } from "@/lib/utils";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -24,16 +24,20 @@ function DashboardPage() {
   const interviews = useQuery(api.interviews.getAllInterviews);
   const updateStatus = useMutation(api.interviews.updateInterviewStatus);
 
-  const handleStatusUpdate = async (interviewId: Id<"interviews">, status: string) => {
+  const handleStatusUpdate = async (interviewId: Id<"interviews">, status: string, result?: "pass" | "fail") => {
     try {
-      await updateStatus({ id: interviewId, status });
-      toast.success(`Interview marked as ${status}`);
+      await updateStatus({
+        id: interviewId,
+        status,
+        ...(result && { result })
+      });
+      toast.success(result ? `Interview marked as ${result}` : `Interview marked as ${status}`);
     } catch (error) {
       toast.error("Failed to update status");
     }
   };
 
-  if (!interviews || !users) return <LoaderUI />;
+  if (!interviews || !users) return <LogoLoader />;
 
   const groupedInterviews = groupInterviews(interviews);
 
@@ -95,21 +99,29 @@ function DashboardPage() {
                         <CardFooter className="p-4 pt-0 flex flex-col gap-3">
                           {interview.status === "completed" && (
                             <div className="flex gap-2 w-full">
-                              <Button
-                                className="flex-1"
-                                onClick={() => handleStatusUpdate(interview._id, "succeeded")}
-                              >
-                                <CheckCircle2Icon className="h-4 w-4 mr-2" />
-                                Pass
-                              </Button>
-                              <Button
-                                variant="destructive"
-                                className="flex-1"
-                                onClick={() => handleStatusUpdate(interview._id, "failed")}
-                              >
-                                <XCircleIcon className="h-4 w-4 mr-2" />
-                                Fail
-                              </Button>
+                              {interview.result ? (
+                                <Badge variant={interview.result === "pass" ? "default" : "destructive"} className="w-full justify-center">
+                                  {interview.result === "pass" ? "Passed" : "Failed"}
+                                </Badge>
+                              ) : (
+                                <>
+                                  <Button
+                                    className="flex-1"
+                                    onClick={() => handleStatusUpdate(interview._id, "completed", "pass")}
+                                  >
+                                    <CheckCircle2Icon className="h-4 w-4 mr-2" />
+                                    Pass
+                                  </Button>
+                                  <Button
+                                    variant="destructive" // This was typo in original code "destuctive"? No, "destructive" is standard shadcn.
+                                    className="flex-1"
+                                    onClick={() => handleStatusUpdate(interview._id, "completed", "fail")}
+                                  >
+                                    <XCircleIcon className="h-4 w-4 mr-2" />
+                                    Fail
+                                  </Button>
+                                </>
+                              )}
                             </div>
                           )}
                           <CommentDialog interviewId={interview._id} />

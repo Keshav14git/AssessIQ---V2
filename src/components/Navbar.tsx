@@ -12,9 +12,9 @@ function Navbar() {
         {/* LEFT SIDE -LOGO */}
         <Link
           href="/"
-          className="pt-4"
+          className="flex items-center gap-2"
         >
-         <Image src={'/assessiq.png'} alt="logo" width={150} height={80} />
+          <span className="text-xl font-bold tracking-tight bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent dark:from-white dark:to-white/60 grayscale opacity-50 hover:grayscale-0 hover:opacity-100 transition-all duration-300">ASSESSIQ</span>
         </Link>
 
         {/* RIGHT SIDE - ACTIONS */}

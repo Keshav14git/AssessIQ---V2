@@ -1,209 +1,209 @@
 "use client";
-import { IoVideocam } from "react-icons/io5";
-import { FaUserFriends } from "react-icons/fa";
-import { HiCodeBracketSquare } from "react-icons/hi2";
-import { MdOutlineScreenShare } from "react-icons/md";
-import { RiCalendarScheduleFill } from "react-icons/ri";
-import { SiClerk } from "react-icons/si";
-import React, { useEffect, useRef } from "react";
+import React, { useRef, useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { motion } from "framer-motion";
 import Image from "next/image";
-import DevelopNotification from "@/components/ui/notification";
+import { motion } from "framer-motion";
+import { IoVideocam, IoCodeSlash, IoPeople, IoAnalytics, IoShieldCheckmark, IoLaptopOutline, IoChevronForward, IoLogoLinkedin, IoLogoGithub } from "react-icons/io5";
+import MockupInterface from "@/components/landing/MockupInterface";
+import HeroLogo from "@/components/landing/HeroLogo";
+
+import { Button } from "@/components/ui/button";
+import { SignedIn, SignedOut } from "@clerk/nextjs";
 
 
 
 export default function LandingPage() {
-  const pathname = usePathname();
-  const logoRef = useRef<SVGSVGElement>(null);
-
-  // Logo animation effect
-  useEffect(() => {
-    const logoElement = logoRef.current;
-    if (!logoElement) return;
-
-    const animation = logoElement.animate(
-      [
-        { transform: "scale(0.95)", opacity: 0.9 },
-        { transform: "scale(1)", opacity: 1 },
-      ],
-      {
-        duration: 2000,
-        iterations: Infinity,
-        direction: "alternate",
-        easing: "ease-in-out",
-      }
-    );
-
-    return () => {
-      animation.cancel();
-    };
-  }, []);
+  const [hoveredFeature, setHoveredFeature] = useState<number | null>(null);
 
   return (
-    <div className="min-h-screen flex flex-col">
-    <DevelopNotification />
-      {/* Hero Section */}
-      <section className="flex-1 flex flex-col items-center justify-center text-center px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto py-20">
+    <div className="min-h-screen bg-[#0a0a0a] text-white selection:bg-green-500/30 selection:text-green-200 font-sans overflow-x-hidden">
+
+
+      {/* BACKGROUND ELEMENTS */}
+      <div className="fixed inset-0 z-0 pointer-events-none">
+        <div className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-green-500/20 rounded-full blur-[120px] mix-blend-screen opacity-20 animate-pulse-slow" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[600px] h-[600px] bg-purple-500/10 rounded-full blur-[120px] mix-blend-screen opacity-20 animate-pulse-slow delay-1000" />
+        <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-[0.03]" />
+      </div>
+
+      {/* NAVBAR */}
+      <nav className="relative z-50 flex items-center justify-between px-6 py-6 max-w-7xl mx-auto">
+        <div className="flex items-center gap-2">
+          <span className="text-xl font-bold tracking-tight bg-gradient-to-r from-white to-white/60 bg-clip-text text-transparent">ASSESSIQ</span>
+        </div>
+
+        <div className="hidden md:flex items-center gap-8 text-sm font-medium text-white/60 absolute left-1/2 -translate-x-1/2">
+          <a href="#features" className="hover:text-white transition-colors">Features</a>
+          <a href="#pricing" className="hover:text-white transition-colors">Pricing</a>
+        </div>
+
+        <div className="flex items-center gap-4">
+          <Link href="https://github.com/Keshav14git/AssessIQ---V2" target="_blank" className="text-white/40 hover:text-white transition-colors mr-2">
+            <IoLogoGithub className="w-6 h-6" />
+          </Link>
+
+          <SignedOut>
+            <Link href="/panel">
+              <Button variant="outline" className="border-white/10 bg-white/5 hover:bg-white/10 text-white hover:text-white backdrop-blur-sm rounded-full px-6">
+                Log In
+              </Button>
+            </Link>
+          </SignedOut>
+
+          <Link href="/panel">
+            <Button className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white rounded-full px-6 shadow-[0_0_20px_rgba(34,197,94,0.3)] hover:shadow-[0_0_30px_rgba(34,197,94,0.5)] transition-all">
+              <SignedIn>Dashboard</SignedIn>
+              <SignedOut>Get Started</SignedOut>
+            </Button>
+          </Link>
+        </div>
+      </nav>
+
+      {/* HERO SECTION */}
+      <section className="relative z-10 pt-32 pb-40 px-6 max-w-7xl mx-auto text-center">
+        <HeroLogo />
+
+        <motion.h1
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2, duration: 0.8 }}
+          className="text-6xl md:text-8xl font-black tracking-tighter mb-8 leading-[1.1]"
+        >
+          Interview <br className="hidden md:block" />
+          <span className="bg-gradient-to-r from-green-400 via-emerald-400 to-teal-400 bg-clip-text text-transparent">Better. Faster.</span>
+        </motion.h1>
+
+        <motion.p
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4, duration: 0.8 }}
+          className="text-xl md:text-2xl text-white/50 max-w-3xl mx-auto mb-12 leading-relaxed font-light"
+        >
+          The all-in-one technical interview platform. Real-time coding, HD video, and AI-powered insights designed to hire the top 1%.
+        </motion.p>
+
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="space-y-8"
+          transition={{ delay: 0.6, duration: 0.8 }}
+          className="flex flex-col sm:flex-row items-center justify-center gap-6"
         >
-          <div className="relative w-32 h-32 mx-auto">
-            <Image
-              src="/assess.png"
-              alt="Assessiq Logo"
-              fill
-              className="object-contain backdrop-blur-md bg-transparent rounded-lg"
-            />
-          </div>
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight">
-            SNIPP : Next Generation
-            <span className="block text-green-500">Assessment & Interview Platform</span>
-          </h1>
-          
-          <p className="max-w-3xl mx-auto text-xl text-gray-600 dark:text-gray-300">
-            Streamline your hiring process with SNIPP - the platform for remote interviews with Integrated Monaco Code-Editor.
-          </p>
-          
-          <div className="flex flex-col sm:flex-row justify-center gap-4">
-            <Link 
-              href="/panel" 
-              className="px-8 py-3 bg-green-500 text-white font-medium rounded-lg shadow-lg hover:bg-green-600 transition-colors duration-200"
-            >
-              Get Started
-            </Link>
-          </div>
+          <Link href="/panel">
+            <Button size="lg" className="h-14 px-8 text-lg bg-white text-black hover:bg-white/90 rounded-full font-semibold transition-all hover:scale-105">
+              Start Interviewing Now
+            </Button>
+          </Link>
+          <Link href="/docs" className="group flex items-center gap-2 text-white/60 hover:text-white transition-colors text-lg font-medium">
+            See how it works <IoChevronForward className="group-hover:translate-x-1 transition-transform" />
+          </Link>
         </motion.div>
       </section>
 
-      {/* Features Section */}
-      <section id="features" className="py-20 bg-gray-50 dark:bg-gray-900">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-gray-900 dark:text-white">Key Features</h2>
-            <p className="mt-4 text-xl text-gray-600 dark:text-gray-300">Everything you need in modern interview platform</p>
+
+
+      {/* DASHBOARD PREVIEW MOCKUP */}
+      <section className="relative z-10 px-4 mb-40">
+        <MockupInterface />
+      </section>
+
+      {/* FEATURES GRID (BENTO STYLE) */}
+      <section id="features" className="relative z-10 py-32 bg-black">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="mb-20">
+            <h2 className="text-4xl md:text-5xl font-bold mb-6">Integrity meets <br />Intelligence.</h2>
+            <p className="text-white/50 text-xl max-w-2xl">The only platform that combines a premium coding environment with forensic-level proctoring.</p>
           </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {/* Feature 1 */}
-            <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
-              <div className="w-12 h-12 bg-green-100 dark:bg-green-900 rounded-lg flex items-center justify-center mb-4">
-                <FaUserFriends  className="w-6 h-6 text-green-500"  />
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {/* Feature 1 (Large - AI Proctoring) */}
+            <motion.div
+              whileHover={{ y: -5 }}
+              className="md:col-span-2 p-10 rounded-3xl bg-white/[0.03] border border-white/5 hover:border-red-500/20 transition-all group overflow-hidden relative"
+            >
+              <div className="absolute top-0 right-0 w-64 h-64 bg-red-500/10 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/2 group-hover:bg-red-500/20 transition-all duration-700" />
+
+              <div className="w-14 h-14 bg-red-500/10 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500 relative z-10">
+                <IoShieldCheckmark className="w-7 h-7 text-red-500" />
               </div>
-              <h3 className="text-xl font-semibold mb-2">Interviewer & Candidate</h3>
-              <p className="text-gray-600 dark:text-gray-300">Defined roles for the user accordingly.</p>
-            </div>
-            
-            {/* Feature 2 */}
-            <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
-              <div className="w-12 h-12 bg-green-100 dark:bg-green-900 rounded-lg flex items-center justify-center mb-4">
-                <IoVideocam className="w-6 h-6 text-green-500" />
+              <h3 className="text-3xl font-bold mb-4 relative z-10">AI Sentinel &trade;</h3>
+              <p className="text-white/50 text-lg leading-relaxed max-w-md relative z-10">
+                Advanced anti-cheat engine that monitors head gaze, face visibility, and multi-person detection in real-time. Automated detailed "Trust Scores" ensure complete interview integrity without being intrusive.
+              </p>
+            </motion.div>
+
+            {/* Feature 2 (Command Center) */}
+            <motion.div
+              whileHover={{ y: -5 }}
+              className="p-10 rounded-3xl bg-white/[0.03] border border-white/5 hover:border-white/20 transition-all group relative overflow-hidden"
+            >
+              <div className="absolute bottom-0 left-0 w-full h-1/2 bg-gradient-to-t from-zinc-900 via-transparent to-transparent opacity-50" />
+
+              <div className="w-14 h-14 bg-white/10 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500 relative z-10">
+                <IoLaptopOutline className="w-7 h-7 text-white" />
               </div>
-              <h3 className="text-xl font-semibold mb-2">Live Meeting</h3>
-              <p className="text-gray-600 dark:text-gray-300">live meetings with one or more candidates as well as Interviewer. </p>
-            </div>
-            
-            {/* Feature 3 */}
-            <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
-              <div className="w-12 h-12 bg-green-100 dark:bg-green-900 rounded-lg flex items-center justify-center mb-4">
-                <HiCodeBracketSquare className="w-6 h-6 text-green-500" />
+              <h3 className="text-2xl font-bold mb-4 relative z-10">Command Center</h3>
+              <p className="text-white/50 text-lg leading-relaxed relative z-10">
+                A distracted-free, immersive dark-mode UI. Split-screen coding, 1080p video, and instant controls.
+              </p>
+            </motion.div>
+
+            {/* Feature 3 (Smart Insights) */}
+            <motion.div
+              whileHover={{ y: -5 }}
+              className="p-10 rounded-3xl bg-white/[0.03] border border-white/5 hover:border-orange-500/20 transition-all group relative overflow-hidden"
+            >
+              <div className="absolute top-0 left-0 w-32 h-32 bg-orange-500/10 rounded-full blur-[60px] -translate-x-1/2 -translate-y-1/2 group-hover:bg-orange-500/20 transition-all duration-700" />
+
+              <div className="w-14 h-14 bg-orange-500/10 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500 relative z-10">
+                <IoAnalytics className="w-7 h-7 text-orange-400" />
               </div>
-              <h3 className="text-xl font-semibold mb-2">Code-Editor</h3>
-              <p className="text-gray-600 dark:text-gray-300">Integrated Monaco CodeEditor powered by Microsoft.</p>
-            </div>
-            
-            {/* Feature 4 */}
-            <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
-              <div className="w-12 h-12 bg-green-100 dark:bg-green-900 rounded-lg flex items-center justify-center mb-4">
-                <MdOutlineScreenShare className="w-6 h-6 text-green-500" />
+              <h3 className="text-2xl font-bold mb-4 relative z-10">Forensic Reports</h3>
+              <p className="text-white/50 text-lg leading-relaxed relative z-10">
+                Get a breakdown of every violation, session duration, and code quality immediately after the call.
+              </p>
+            </motion.div>
+
+            {/* Feature 4 (Large - Coding) */}
+            <motion.div
+              whileHover={{ y: -5 }}
+              className="md:col-span-2 p-10 rounded-3xl bg-white/[0.03] border border-white/5 hover:border-green-500/20 transition-all group relative overflow-hidden"
+            >
+              <div className="absolute bottom-0 right-0 w-64 h-64 bg-emerald-500/10 rounded-full blur-[80px] translate-y-1/2 translate-x-1/2 group-hover:bg-emerald-500/20 transition-all duration-700" />
+
+              <div className="w-14 h-14 bg-emerald-500/10 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500 relative z-10">
+                <IoCodeSlash className="w-7 h-7 text-emerald-400" />
               </div>
-              <h3 className="text-xl font-semibold mb-2">ScreenShare</h3>
-              <p className="text-gray-600 dark:text-gray-300">Enabled ScreenShare for better intraction.</p>
-            </div>
-            
-            {/* Feature 5 */}
-            <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
-              <div className="w-12 h-12 bg-green-100 dark:bg-green-900 rounded-lg flex items-center justify-center mb-4">
-                <RiCalendarScheduleFill className="w-6 h-6 text-green-500" />
-              </div>
-              <h3 className="text-xl font-semibold mb-2">Schedule Meetings & Recordings</h3>
-              <p className="text-gray-600 dark:text-gray-300">Candidate can get their meetings(interview) scheduled by the interviewer and recordings of the every meeting can be saved for later evaluation.</p>
-            </div>
-            
-            {/* Feature 6 */}
-            <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
-              <div className="w-12 h-12 bg-green-100 dark:bg-green-900 rounded-lg flex items-center justify-center mb-4">
-                <SiClerk className="w-6 h-6 text-green-500" />
-              </div>
-              <h3 className="text-xl font-semibold mb-2">Clerk-Convex</h3>
-              <p className="text-gray-600 dark:text-gray-300">Integration of Clerk Auth with serverless backend Convex.</p>
-            </div>
+              <h3 className="text-3xl font-bold mb-4 relative z-10">Review & Code</h3>
+              <p className="text-white/50 text-lg leading-relaxed max-w-md relative z-10">
+                A fully collaborative IDE powered by Monaco. Syntax highlighting, multi-language support (JS, Python, Java), and integrated execution. It's VS Code in the browser.
+              </p>
+            </motion.div>
           </div>
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="bg-gray-100 dark:bg-gray-900 py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            <div>
-              <h3 className="text-lg font-semibold mb-4">Product</h3>
-              <ul className="space-y-2">
-                <li><a href="#" className="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white">Features</a></li>
-                <li><a href="#" className="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white">Pricing</a></li>
-                <li><a href="#" className="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white">Security</a></li>
-                <li><a href="#" className="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white">Integrations</a></li>
-              </ul>
+      {/* FOOTER */}
+      <footer className="relative z-10 py-20 bg-neutral-950 border-t border-white/5">
+        <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-10">
+          <div className="flex items-center gap-3">
+            <div className="relative w-32 h-32 grayscale hover:grayscale-0 transition-all duration-300">
+              <Image src="/assessiq.png" alt="Logo" fill className="object-contain" />
             </div>
-            
-            <div>
-              <h3 className="text-lg font-semibold mb-4">Company</h3>
-              <ul className="space-y-2">
-                <li><a href="#" className="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white">About</a></li>
-                <li><a href="#" className="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white">Careers</a></li>
-                <li><a href="#" className="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white">Blog</a></li>
-                <li><a href="#" className="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white">Press</a></li>
-              </ul>
-            </div>
-            
-            <div>
-              <h3 className="text-lg font-semibold mb-4">Resources</h3>
-              <ul className="space-y-2">
-                <li><a href="#" className="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white">Documentation</a></li>
-                <li><a href="#" className="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white">Help Center</a></li>
-                <li><a href="#" className="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white">Guides</a></li>
-                <li><a href="#" className="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white">API</a></li>
-              </ul>
-            </div>
-            
-            <div>
-              <h3 className="text-lg font-semibold mb-4">Contact</h3>
-              <ul className="space-y-2">
-                <li><a href="#" className="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white">Email</a></li>
-                <li><a href="#" className="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white">Support</a></li>
-                <li><a href="#" className="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white">Sales</a></li>
-              </ul>
-            </div>
+            <p className="text-sm font-medium text-green-400 grayscale opacity-50 hover:grayscale-0 hover:opacity-100 transition-all duration-300">© {new Date().getFullYear()} Assessiq</p>
           </div>
-          
-          <div className="mt-12 pt-8 border-t border-gray-200 dark:border-gray-700 flex flex-col md:flex-row justify-between items-center">
-            <div className="flex items-center space-x-2">
-              <div className="relative w-32 h-32 mx-auto">
-                <Image
-                  src="/assessiq.png"
-                  alt="Assess Logo"
-                  fill
-                  className="object-contain backdrop-blur-md bg-transparent rounded-lg"
-                />
-              </div>
-            </div>
-            
-            <div className="mt-4 md:mt-0">
-              <p className="text-gray-600 dark:text-gray-300">© {new Date().getFullYear()} SNIPP. All rights reserved.</p>
+
+          <div className="flex gap-8 text-sm font-medium text-white/40 flex-wrap justify-end items-center">
+            <Link href="/about" className="hover:text-green-400 transition-colors">About</Link>
+            <Link href="/integrations" className="hover:text-green-400 transition-colors">Integrations</Link>
+            <Link href="/docs" className="hover:text-green-400 transition-colors">Documentation</Link>
+            <Link href="/help" className="hover:text-green-400 transition-colors">Help Center</Link>
+            <div className="flex items-center gap-4 pl-4 border-l border-white/10">
+              <Link href="https://www.linkedin.com/in/keshav-jangir-nov1411/" target="_blank" className="hover:text-[#0077b5] transition-colors">
+                <IoLogoLinkedin className="w-5 h-5" />
+              </Link>
+              <Link href="https://github.com/Keshav14git/AssessIQ---V2" target="_blank" className="hover:text-white transition-colors">
+                <IoLogoGithub className="w-5 h-5" />
+              </Link>
             </div>
           </div>
         </div>

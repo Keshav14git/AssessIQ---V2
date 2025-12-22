@@ -1,6 +1,6 @@
 "use client";
 
-import LoaderUI from "@/components/LoaderUI";
+import LogoLoader from "@/components/ui/LogoLoader";
 import RecordingCard from "@/components/RecordingCard";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import useGetCalls from "@/hooks/useGetCalls";
@@ -29,7 +29,7 @@ function RecordingsPage() {
     fetchRecordings();
   }, [calls]);
 
-  if (isLoading) return <LoaderUI />;
+  if (isLoading) return <LogoLoader />;
 
   return (
     <div className="container max-w-7xl mx-auto p-6">

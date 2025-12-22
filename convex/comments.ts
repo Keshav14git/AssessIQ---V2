@@ -16,7 +16,7 @@ export const addComment = mutation({
       interviewId: args.interviewId,
       content: args.content,
       rating: args.rating,
-      interviewerId: identity.subject,
+      authorId: identity.subject,
     });
   },
 });

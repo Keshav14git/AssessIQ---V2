@@ -1,12 +1,21 @@
 import { useRouter } from "next/navigation";
 import { useStreamVideoClient } from "@stream-io/video-react-sdk";
 import toast from "react-hot-toast";
+import { useUser } from "@clerk/nextjs";
+import { useMutation } from "convex/react";
+import { api } from "../../convex/_generated/api";
 
 const useMeetingActions = () => {
   const router = useRouter();
   const client = useStreamVideoClient();
+  const { user } = useUser();
+  const createInterview = useMutation(api.interviews.createInterview);
 
-  const createInstantMeeting = async () => {
+  const createInstantMeeting = async (customData?: {
+    customQuestions?: any[];
+    customCodingChallenges?: any[];
+    language?: string;
+  }) => {
     if (!client) return;
 
     try {
@@ -20,6 +29,17 @@ const useMeetingActions = () => {
             description: "Instant Meeting",
           },
         },
+      });
+
+      await createInterview({
+        title: "Instant Meeting",
+        startTime: Date.now(),
+        status: "active",
+        streamCallId: id,
+        interviewerIds: user?.id ? [user.id] : [],
+        customQuestions: customData?.customQuestions,
+        customCodingChallenges: customData?.customCodingChallenges,
+        language: customData?.language,
       });
 
       router.push(`/panel/meeting/${call.id}`);
