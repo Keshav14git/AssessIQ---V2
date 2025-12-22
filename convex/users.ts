@@ -11,7 +11,7 @@ export const syncUser = mutation({
   handler: async (ctx, args) => {
     const existingUser = await ctx.db
       .query("users")
-      .filter((q) => q.eq(q.field("clerkId"), args.clerkId))
+      .withIndex("by_clerk_id", (q) => q.eq("clerkId", args.clerkId))
       .first();
 
     if (existingUser) return;
@@ -45,6 +45,8 @@ export const setUserRole = mutation({
       role: args.role,
       roleSelected: true,
     });
+
+    console.log(`Role updated for user ${user._id} (${user.name}): ${args.role}`);
 
     return { success: true };
   },
