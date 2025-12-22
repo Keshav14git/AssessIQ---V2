@@ -12,13 +12,6 @@ export default function LogoLoader() {
                 <div
                     className="relative w-48 h-16 md:w-64 md:h-24 overflow-hidden"
                     style={{
-                        maskImage: "url('/assessiq.png')", // Using the full logo text image if available, or assess.png
-                        // User mentioned "assessiq" text logo earlier, let's stick to the consistent one used in footer/navbar if possible.
-                        // Actually usage in Navbar was just text. Usage in footer was /assessiq.png. 
-                        // Let's use /assess.png as the mask shape if it's the main brand mark, or /assessiq.png.
-                        // The user said "update logo with the same that is on the landing page" for navbar. 
-                        // Landing page hero used /assess.png. Navbar text was text. Footer used /assessiq.png.
-                        // Let's use the Image based one for the loader for visual impact. /assess.png (the hero one) is likely the big graphical one.
                         maskImage: "url('/assessiq.png')",
                         maskSize: "contain",
                         maskRepeat: "no-repeat",
