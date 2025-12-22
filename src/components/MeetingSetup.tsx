@@ -15,6 +15,8 @@ import {
 } from "@/components/ui/dialog";
 import { Checkbox } from "@/components/ui/checkbox";
 
+import toast from "react-hot-toast";
+
 function MeetingSetup({ onSetupComplete }: { onSetupComplete: () => void }) {
   const [isCameraDisabled, setIsCameraDisabled] = useState(true);
   const [isMicDisabled, setIsMicDisabled] = useState(false);
@@ -27,9 +29,17 @@ function MeetingSetup({ onSetupComplete }: { onSetupComplete: () => void }) {
   if (!call) return null;
 
   useEffect(() => {
-    if (isCameraDisabled) call.camera.disable();
-    else call.camera.enable();
-  }, [isCameraDisabled, call.camera]);
+    if (isCameraDisabled) {
+      call?.camera.disable();
+    } else {
+      call?.camera.enable().catch((err) => {
+        console.error("Error enabling camera:", err);
+        toast.error("Camera failed to start. Please close other apps (Zoom, Teams) using the camera.", {
+          duration: 5000,
+        });
+      });
+    }
+  }, [isCameraDisabled, call?.camera]);
 
   useEffect(() => {
     if (isMicDisabled) call.microphone.disable();
