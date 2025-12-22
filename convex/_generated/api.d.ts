@@ -10,6 +10,7 @@
 
 import type * as ai from "../ai.js";
 import type * as comments from "../comments.js";
+import type * as debug from "../debug.js";
 import type * as emails from "../emails.js";
 import type * as http from "../http.js";
 import type * as interviews from "../interviews.js";
@@ -25,6 +26,7 @@ import type {
 declare const fullApi: ApiFromModules<{
   ai: typeof ai;
   comments: typeof comments;
+  debug: typeof debug;
   emails: typeof emails;
   http: typeof http;
   interviews: typeof interviews;
