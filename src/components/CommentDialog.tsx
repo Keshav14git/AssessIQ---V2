@@ -92,7 +92,7 @@ function CommentDialog({ interviewId }: { interviewId: Id<"interviews"> }) {
               <ScrollArea className="h-[240px]">
                 <div className="space-y-4">
                   {existingComments.map((comment, index) => {
-                    const interviewer = getInterviewerInfo(users, comment.interviewerId);
+                    const interviewer = getInterviewerInfo(users, comment.authorId);
                     return (
                       <div key={index} className="rounded-lg border p-4 space-y-3">
                         <div className="flex items-center justify-between">
