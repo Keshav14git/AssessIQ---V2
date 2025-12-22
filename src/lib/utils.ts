@@ -31,7 +31,7 @@ export const groupInterviews = (interviews: Interview[]) => {
   }, {});
 };
 
-export const getCandidateInfo = (users: User[], candidateId: string) => {
+export const getCandidateInfo = (users: User[], candidateId: string | undefined) => {
   const candidate = users?.find((user) => user.clerkId === candidateId);
   return {
     name: candidate?.name || "Unknown Candidate",
