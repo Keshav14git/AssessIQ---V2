@@ -29,42 +29,47 @@ function MeetingSetup({ onSetupComplete }: { onSetupComplete: () => void }) {
   if (!call) return null;
 
   useEffect(() => {
-    if (isCameraDisabled) {
-      call?.camera.disable();
+    // Initial setup: ensure devices are in correct state based on default state
+    if (isCameraDisabled) call?.camera.disable();
+    if (isMicDisabled) call?.microphone.disable();
+
+    // Cleanup on unmount
+    return () => {
+      // Optional: leave devices as is or disable? 
+      // Best to leave them for the next screen (MeetingRoom).
+    };
+  }, [call]); // Only run once on mount
+
+  const handleCameraToggle = async (checked: boolean) => {
+    setIsCameraDisabled(!checked);
+    if (!checked) {
+      await call?.camera.disable();
     } else {
-      call?.camera.enable().catch((err) => {
+      try {
+        await call?.camera.enable();
+      } catch (err) {
         console.error("Error enabling camera:", err);
-        toast.error("Camera failed to start. Please close other apps (Zoom, Teams) using the camera.", {
-          duration: 5000,
+        toast.error("Camera failed! If using Brave, turn off Shields (Lion Icon). Also close Zoom/Teams.", {
+          duration: 6000,
         });
-      });
-    }
-  }, [isCameraDisabled, call?.camera]);
-
-  useEffect(() => {
-    if (isMicDisabled) call.microphone.disable();
-    else call.microphone.enable();
-  }, [isMicDisabled, call.microphone]);
-
-  const handleJoin = async () => {
-    if (isCandidate) {
-      setIsInstructionsOpen(true);
-    } else {
-      await call.join();
-      onSetupComplete();
+        // Revert switch state if failed
+        setIsCameraDisabled(true);
+      }
     }
   };
 
-  const confirmJoin = async () => {
-    if (isAcknowledged) {
+  const handleMicToggle = async (checked: boolean) => {
+    setIsMicDisabled(!checked);
+    if (!checked) {
+      await call?.microphone.disable();
+    } else {
       try {
-        await document.documentElement.requestFullscreen();
+        await call?.microphone.enable();
       } catch (err) {
-        console.error("Error attempting to enable full-screen mode:", err);
+        console.error("Error enabling mic:", err);
+        toast.error("Microphone failed to start.", { duration: 3000 });
+        setIsMicDisabled(true);
       }
-      setIsInstructionsOpen(false);
-      await call.join();
-      onSetupComplete();
     }
   };
 
@@ -140,7 +145,7 @@ function MeetingSetup({ onSetupComplete }: { onSetupComplete: () => void }) {
                   </div>
                   <Switch
                     checked={!isCameraDisabled}
-                    onCheckedChange={(checked) => setIsCameraDisabled(!checked)}
+                    onCheckedChange={handleCameraToggle}
                     className="data-[state=checked]:bg-green-500"
                   />
                 </div>
@@ -160,7 +165,7 @@ function MeetingSetup({ onSetupComplete }: { onSetupComplete: () => void }) {
                   </div>
                   <Switch
                     checked={!isMicDisabled}
-                    onCheckedChange={(checked) => setIsMicDisabled(!checked)}
+                    onCheckedChange={handleMicToggle}
                     className="data-[state=checked]:bg-green-500"
                   />
                 </div>
