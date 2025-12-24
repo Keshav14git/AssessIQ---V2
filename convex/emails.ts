@@ -18,15 +18,16 @@ export const sendCandidateInvite = action({
         const user = process.env.GMAIL_USER;
         const pass = process.env.GMAIL_PASS;
 
+        console.log("Sending email with args:", { ...args, password: "***" });
+
         if (!user || !pass) {
             console.log("---------------------------------------------------");
             console.log("📧 [MOCK EMAIL] WOULD SEND TO:", args.email);
-            console.log("Subject: You're invited to an interview!");
+            console.log("Subject: Interview Scheduled");
             console.log(`Hi ${args.name},`);
             console.log(`You have an interview scheduled on ${args.date} at ${args.time}.`);
-            console.log(`Your Login Credentials:`);
-            console.log(`Username: ${args.email.split("@")[0]}`);
-            console.log(`Password: ${args.password}`);
+            console.log(`Link: ${args.interviewLink}`);
+            console.log(`Login Credentials: ${args.email} / ${args.password}`);
             console.log("---------------------------------------------------");
             return { success: true, mock: true };
         }
@@ -39,6 +40,14 @@ export const sendCandidateInvite = action({
                     pass, // App Password
                 },
             });
+
+            // Safely get base URL
+            let baseUrl = "https://snipp.com";
+            try {
+                baseUrl = new URL(args.interviewLink).origin;
+            } catch (e) {
+                console.warn("Invalid interviewLink, defaulting base URL", e);
+            }
 
             const mailOptions = {
                 from: `"Snipp Interview" <${user}>`,
@@ -66,7 +75,7 @@ export const sendCandidateInvite = action({
           <tr>
             <td style="padding: 40px 40px 20px 40px;">
               <!-- LOGO -->
-              <img src="${new URL(args.interviewLink).origin}/snipp.png" alt="SNIPP" width="120" style="display: block; width: 120px; height: auto; margin-bottom: 24px;">
+              <img src="${baseUrl}/snipp.png" alt="SNIPP" width="120" style="display: block; width: 120px; height: auto; margin-bottom: 24px;">
               
               <!-- HEADING -->
               <h1 style="margin: 0; font-size: 28px; font-weight: 600; color: #ffffff; letter-spacing: -0.5px;">Interview Scheduled</h1>
@@ -172,9 +181,10 @@ export const sendCandidateInvite = action({
             const info = await transporter.sendMail(mailOptions);
             return { success: true, messageId: info.messageId };
 
-        } catch (error) {
+        } catch (error: any) {
             console.error("Failed to send email:", error);
-            throw new Error("Failed to send email invite via Gmail");
+            // Throw the actual error so it shows in the client toast/console
+            throw new Error(`Failed to send email: ${error.message || error}`);
         }
     },
 });
