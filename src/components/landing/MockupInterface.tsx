@@ -63,7 +63,7 @@ export default function MockupInterface() {
                     <div className="w-3 h-3 rounded-full bg-green-500/80" />
                 </div>
                 <div className="text-xs font-medium text-white/40 bg-black/50 px-3 py-1 rounded-md border border-white/5">
-                    app.assessiq.com/interview/room-101
+                    app.snipp.com/interview/room-101
                 </div>
             </div>
 

@@ -12,11 +12,11 @@ export default function LogoLoader() {
                 <div
                     className="relative w-48 h-16 md:w-64 md:h-24 overflow-hidden"
                     style={{
-                        maskImage: "url('/assessiq.png')",
+                        maskImage: "url('/snipp.png')",
                         maskSize: "contain",
                         maskRepeat: "no-repeat",
                         maskPosition: "center",
-                        WebkitMaskImage: "url('/assessiq.png')",
+                        WebkitMaskImage: "url('/snipp.png')",
                         WebkitMaskSize: "contain",
                         WebkitMaskRepeat: "no-repeat",
                         WebkitMaskPosition: "center",

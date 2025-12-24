@@ -79,7 +79,7 @@ export default function DocsPage() {
                     <IoChevronBack /> Back to Application
                 </Link>
                 <div className="font-bold text-lg tracking-tight">
-                    Assessiq <span className="text-white/40 font-normal ml-2">Developer Docs</span>
+                    Snipp <span className="text-white/40 font-normal ml-2">Developer Docs</span>
                 </div>
                 <div className="ml-auto flex items-center gap-4">
                     <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="p-2 text-white/40 hover:text-white transition-colors">
@@ -120,7 +120,7 @@ export default function DocsPage() {
                             </div>
                             <h1 className="text-4xl md:text-6xl font-black mb-6 tracking-tight">System Documentation</h1>
                             <p className="text-xl text-white/60 leading-relaxed mb-8">
-                                Assessiq is a comprehensive technical interview platform engineering for low-latency collaboration. It unifies video conferencing, code execution, and real-time synchronization into a single, cohesive interface.
+                                Snipp is a comprehensive technical interview platform engineering for low-latency collaboration. It unifies video conferencing, code execution, and real-time synchronization into a single, cohesive interface.
                             </p>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div className="p-6 rounded-2xl bg-white/[0.02] border border-white/5">
@@ -153,7 +153,7 @@ export default function DocsPage() {
                         <div className="mb-8 bg-neutral-900 rounded-xl border border-white/10 p-2 overflow-hidden shadow-2xl">
                             <Image
                                 src="/Architecture.png"
-                                alt="Assessiq System Architecture"
+                                alt="Snipp System Architecture"
                                 width={1200}
                                 height={675}
                                 className="w-full h-auto rounded-lg"
@@ -305,7 +305,7 @@ export default function DocsPage() {
                         <div className="mb-8 bg-neutral-900 rounded-xl border border-white/10 p-2 overflow-hidden shadow-2xl">
                             <Image
                                 src="/Uml.png"
-                                alt="Assessiq ER Diagram"
+                                alt="Snipp ER Diagram"
                                 width={1200}
                                 height={800}
                                 className="w-full h-auto rounded-lg"
@@ -347,7 +347,7 @@ export default function DocsPage() {
                         <div className="mb-8 bg-neutral-900 rounded-xl border border-white/10 p-2 overflow-hidden shadow-2xl">
                             <Image
                                 src="/Workflow.png"
-                                alt="Assessiq Application Workflow"
+                                alt="Snipp Application Workflow"
                                 width={1200}
                                 height={600}
                                 className="w-full h-auto rounded-lg"

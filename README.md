@@ -1,4 +1,4 @@
-# AssessIQ V2 🧠
+# Snipp 🧠
 > *The Intelligent, Anti-Cheat Interview Platform.*
 
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
@@ -6,7 +6,7 @@
 ![Convex](https://img.shields.io/badge/DB-Convex-orange)
 ![Stream](https://img.shields.io/badge/Video-Stream%20SDK-blue)
 
-AssessIQ is a modern technical interview platform designed to conduct high-integrity, remote coding interviews. It combines real-time video, a collaborative code editor, and **AI Sentinel™**—a privacy-first proctoring system that monitors candidate behavior to ensure fair and valid assessments.
+Snipp is a modern technical interview platform designed to conduct high-integrity, remote coding interviews. It combines real-time video, a collaborative code editor, and **AI Sentinel™**—a privacy-first proctoring system that monitors candidate behavior to ensure fair and valid assessments.
 
 ---
 

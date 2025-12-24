@@ -14,7 +14,7 @@ function Navbar() {
           href="/"
           className="flex items-center gap-2"
         >
-          <span className="text-xl font-bold tracking-tight bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent dark:from-white dark:to-white/60 grayscale opacity-50 hover:grayscale-0 hover:opacity-100 transition-all duration-300">ASSESSIQ</span>
+          <span className="text-xl font-bold tracking-tight bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent dark:from-white dark:to-white/60 grayscale opacity-50 hover:grayscale-0 hover:opacity-100 transition-all duration-300">SNIPP</span>
         </Link>
 
         {/* RIGHT SIDE - ACTIONS */}

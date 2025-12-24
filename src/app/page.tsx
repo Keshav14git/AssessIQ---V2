@@ -29,7 +29,7 @@ export default function LandingPage() {
       {/* NAVBAR */}
       <nav className="relative z-50 flex items-center justify-between px-6 py-6 max-w-7xl mx-auto">
         <div className="flex items-center gap-2">
-          <span className="text-xl font-bold tracking-tight bg-gradient-to-r from-white to-white/60 bg-clip-text text-transparent">ASSESSIQ</span>
+          <span className="text-xl font-bold tracking-tight bg-gradient-to-r from-white to-white/60 bg-clip-text text-transparent">SNIPP</span>
         </div>
 
         <div className="hidden md:flex items-center gap-8 text-sm font-medium text-white/60 absolute left-1/2 -translate-x-1/2">
@@ -187,9 +187,9 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-10">
           <div className="flex items-center gap-3">
             <div className="relative w-32 h-32 grayscale hover:grayscale-0 transition-all duration-300">
-              <Image src="/assessiq.png" alt="Logo" fill className="object-contain" />
+              <Image src="/snipp.png" alt="Logo" fill className="object-contain" />
             </div>
-            <p className="text-sm font-medium text-green-400 grayscale opacity-50 hover:grayscale-0 hover:opacity-100 transition-all duration-300">© {new Date().getFullYear()} Assessiq</p>
+            <p className="text-sm font-medium text-green-400 grayscale opacity-50 hover:grayscale-0 hover:opacity-100 transition-all duration-300">© {new Date().getFullYear()} Snipp</p>
           </div>
 
           <div className="flex gap-8 text-sm font-medium text-white/40 flex-wrap justify-end items-center">

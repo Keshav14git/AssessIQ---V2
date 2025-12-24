@@ -7,8 +7,8 @@ import { IoChevronBack, IoRocketOutline, IoConstructOutline, IoPeopleOutline, Io
 
 const faqs = [
     {
-        question: "What is Assessiq?",
-        answer: "Assessiq is a comprehensive technical interview platform designed to replace the fragmented toolchain of Zoom, Google Docs, and CodeSandbox. It brings video calling, collaborative coding, and real-time synchronization into a single, unified interface."
+        question: "What is Snipp?",
+        answer: "Snipp is a comprehensive technical interview platform designed to replace the fragmented toolchain of Zoom, Google Docs, and CodeSandbox. It brings video calling, collaborative coding, and real-time synchronization into a single, unified interface."
     },
     {
         question: "Why did you build this?",
@@ -16,7 +16,7 @@ const faqs = [
     },
     {
         question: "What technologies does it use?",
-        answer: "Assessiq is a modern full-stack application built with Next.js 14, Convex for real-time backend state, Clerk for secure authentication, and Stream for low-latency video calls. The editor uses the Monaco Editor engine (from VS Code) for a professional coding experience."
+        answer: "Snipp is a modern full-stack application built with Next.js 14, Convex for real-time backend state, Clerk for secure authentication, and Stream for low-latency video calls. The editor uses the Monaco Editor engine (from VS Code) for a professional coding experience."
     },
     {
         question: "Is this a real startup?",
@@ -94,7 +94,7 @@ export default function AboutPage() {
                         <span className="bg-gradient-to-r from-purple-400 to-pink-500 bg-clip-text text-transparent">Hiring Process.</span>
                     </h1>
                     <p className="text-2xl text-white/50 leading-relaxed max-w-3xl mx-auto">
-                        Assessiq is a full-stack engineering project born from a desire to make technical interviews fair, realistic, and delightful.
+                        Snipp is a full-stack engineering project born from a desire to make technical interviews fair, realistic, and delightful.
                     </p>
                 </motion.div>
 
@@ -145,7 +145,7 @@ export default function AboutPage() {
                             <h2 className="text-3xl font-bold mb-6">Building the Solution</h2>
                             <div className="space-y-6 text-lg text-white/60 leading-relaxed">
                                 <p>
-                                    Assessiq is my answer to that problem. It's built with the same technologies that power billion-dollar startups, engineered to handle real-time concurrency and low-latency streaming.
+                                    Snipp is my answer to that problem. It's built with the same technologies that power billion-dollar startups, engineered to handle real-time concurrency and low-latency streaming.
                                 </p>
                                 <p>
                                     It's not just a clone; it's a rethinking of how we should assess talent—focusing on collaboration and code quality, not just memorization.
@@ -218,7 +218,7 @@ export default function AboutPage() {
                     </div>
                     <h2 className="text-4xl font-bold mb-6">Thanks for checking it out!</h2>
                     <p className="text-xl text-white/50 leading-relaxed mb-12 max-w-2xl mx-auto">
-                        Assessiq is a labor of love and a testament to modern web engineering. I hope you enjoy using it as much as I enjoyed building it.
+                        Snipp is a labor of love and a testament to modern web engineering. I hope you enjoy using it as much as I enjoyed building it.
                     </p>
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                         <Link href="/" className="px-8 py-4 rounded-full bg-white text-black font-bold hover:scale-105 transition-transform w-full sm:w-auto">

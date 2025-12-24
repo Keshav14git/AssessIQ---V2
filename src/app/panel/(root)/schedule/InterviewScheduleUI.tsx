@@ -136,7 +136,10 @@ function InterviewScheduleUI() {
           name: candidateUser.name || "Candidate",
           date: meetingDate.toLocaleDateString(),
           time: time,
-          password: tempPassword
+          password: tempPassword,
+          title: title || "Technical Interview",
+          interviewLink: `${window.location.origin}/panel/meeting/${id}`,
+          timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone
         });
         toast.success("Invitation email sent!");
       }
