@@ -204,6 +204,7 @@ function InterviewScheduleUI() {
           </DialogTrigger>
 
           <DialogContent className="sm:max-w-4xl p-0 overflow-hidden bg-zinc-900 border-zinc-800">
+            <DialogTitle className="sr-only">Schedule Interview</DialogTitle>
             {/* NO DEFAULT HEADER - CUSTOM HEADER */}
             <div className="grid grid-cols-1 md:grid-cols-5 h-[80vh] md:h-[600px] overflow-hidden">
 
