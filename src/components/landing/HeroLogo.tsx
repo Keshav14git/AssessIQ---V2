@@ -40,11 +40,11 @@ export default function HeroLogo() {
             <div
                 className="relative w-[360px] h-[110px] sm:w-[580px] sm:h-[180px] md:w-[850px] md:h-[260px]"
                 style={{
-                    maskImage: "url('/assess.png')",
+                    maskImage: "url('/1.png')",
                     maskSize: "contain",
                     maskRepeat: "no-repeat",
                     maskPosition: "center",
-                    WebkitMaskImage: "url('/assess.png')",
+                    WebkitMaskImage: "url('/1.png')",
                     WebkitMaskSize: "contain",
                     WebkitMaskRepeat: "no-repeat",
                     WebkitMaskPosition: "center",

@@ -34,7 +34,7 @@ export default function RoleSelectionDialog({ isOpen }: { isOpen: boolean }) {
                 <DialogHeader>
                     <DialogTitle className="text-3xl font-bold text-center">Choose Your Role</DialogTitle>
                     <DialogDescription className="text-center text-lg">
-                        Select how you would like to use Snipp today.
+                        Select how you would like to use AssessIQ today.
                     </DialogDescription>
                 </DialogHeader>
 

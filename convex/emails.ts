@@ -4,51 +4,51 @@ import { v } from "convex/values";
 import { action } from "./_generated/server";
 
 export const sendCandidateInvite = action({
-    args: {
-        email: v.string(),
-        name: v.string(),
-        date: v.string(),
-        time: v.string(),
-        password: v.string(), // Auto-generated password
-        title: v.string(),
-        interviewLink: v.string(),
-        timeZone: v.string(),
-    },
-    handler: async (ctx, args) => {
-        console.log("✅ ACTION STARTED: sendCandidateInvite");
-        console.log("Args:", args);
+  args: {
+    email: v.string(),
+    name: v.string(),
+    date: v.string(),
+    time: v.string(),
+    password: v.string(), // Auto-generated password
+    title: v.string(),
+    interviewLink: v.string(),
+    timeZone: v.string(),
+  },
+  handler: async (ctx, args) => {
+    console.log("✅ ACTION STARTED: sendCandidateInvite");
+    console.log("Args:", args);
 
-        const user = process.env.GMAIL_USER;
-        const pass = process.env.GMAIL_PASS;
+    const user = process.env.GMAIL_USER;
+    const pass = process.env.GMAIL_PASS;
 
-        if (!user || !pass) {
-            console.log("⚠️ Missing Env Vars (GMAIL_USER or GMAIL_PASS) - Returning Error");
-            throw new Error("Missing GMAIL_USER or GMAIL_PASS environment variables in Convex Dashboard.");
-        }
+    if (!user || !pass) {
+      console.log("⚠️ Missing Env Vars (GMAIL_USER or GMAIL_PASS) - Returning Error");
+      throw new Error("Missing GMAIL_USER or GMAIL_PASS environment variables in Convex Dashboard.");
+    }
 
-        try {
-            console.log("📧 Creating Nodemailer Transporter...");
-            const transporter = nodemailer.createTransport({
-                service: "gmail",
-                auth: {
-                    user, // assessiqinterview@gmail.com
-                    pass, // App Password
-                },
-            });
+    try {
+      console.log("📧 Creating Nodemailer Transporter...");
+      const transporter = nodemailer.createTransport({
+        service: "gmail",
+        auth: {
+          user, // assessiqinterview@gmail.com
+          pass, // App Password
+        },
+      });
 
-            // Safely get base URL
-            let baseUrl = "https://snipp.com";
-            try {
-                baseUrl = new URL(args.interviewLink).origin;
-            } catch (e) {
-                console.warn("Invalid interviewLink, defaulting base URL", e);
-            }
+      // Safely get base URL
+      let baseUrl = "https://assessiq.com";
+      try {
+        baseUrl = new URL(args.interviewLink).origin;
+      } catch (e) {
+        console.warn("Invalid interviewLink, defaulting base URL", e);
+      }
 
-            const mailOptions = {
-                from: `"Snipp Interview" <${user}>`,
-                to: args.email,
-                subject: "Interview Invitation & Credentials",
-                html: `
+      const mailOptions = {
+        from: `"AssessIQ Interview" <${user}>`,
+        to: args.email,
+        subject: "Interview Invitation & Credentials",
+        html: `
 <!DOCTYPE html>
 <html>
 <head>
@@ -70,7 +70,7 @@ export const sendCandidateInvite = action({
           <tr>
             <td style="padding: 40px 40px 20px 40px;">
               <!-- LOGO -->
-              <img src="${baseUrl}/snipp.png" alt="SNIPP" width="120" style="display: block; width: 120px; height: auto; margin-bottom: 24px;">
+              <img src="${baseUrl}/1.png" alt="AssessIQ" width="120" style="display: block; width: 120px; height: auto; margin-bottom: 24px;">
               
               <!-- HEADING -->
               <h1 style="margin: 0; font-size: 28px; font-weight: 600; color: #ffffff; letter-spacing: -0.5px;">Interview Scheduled</h1>
@@ -156,8 +156,8 @@ export const sendCandidateInvite = action({
           <tr>
             <td style="padding: 20px 40px; border-top: 1px solid rgba(255, 255, 255, 0.05); text-align: center;">
               <p style="margin: 0; font-size: 12px; color: #666666;">
-                © ${new Date().getFullYear()} SNIPP · Secure & Fair Interviews<br>
-                For support, contact <a href="mailto:support@snipp.com" style="color: #666666; text-decoration: underline;">support@snipp.com</a>
+                © ${new Date().getFullYear()} AssessIQ · Secure & Fair Interviews<br>
+                For support, contact <a href="mailto:support@assessiq.com" style="color: #666666; text-decoration: underline;">support@assessiq.com</a>
               </p>
             </td>
           </tr>
@@ -171,16 +171,16 @@ export const sendCandidateInvite = action({
 </body>
 </html>
             `,
-            };
+      };
 
-            console.log("🚀 Sending real email now...");
-            const info = await transporter.sendMail(mailOptions);
-            console.log("✅ Email sent:", info.messageId);
-            return { success: true, messageId: info.messageId };
+      console.log("🚀 Sending real email now...");
+      const info = await transporter.sendMail(mailOptions);
+      console.log("✅ Email sent:", info.messageId);
+      return { success: true, messageId: info.messageId };
 
-        } catch (error: any) {
-            console.error("❌ CRASHED:", error);
-            throw new Error(`Failed to send email: ${error.message || error}`);
-        }
-    },
+    } catch (error: any) {
+      console.error("❌ CRASHED:", error);
+      throw new Error(`Failed to send email: ${error.message || error}`);
+    }
+  },
 });

@@ -69,7 +69,7 @@ const KNOWLEDGE_BASE: KPIssue[] = [
         solution: (
             <div className="space-y-4 text-sm text-white/70">
                 <p>This happens if the OAuth state token mismatches or expires.</p>
-                <p>Clear your browser cookies for `snipp.com` and `clerk.com` and try signing in again. Ensure you are not using an Incognito window that blocks third-party cookies.</p>
+                <p>Clear your browser cookies for `assessiq.com` and `clerk.com` and try signing in again. Ensure you are not using an Incognito window that blocks third-party cookies.</p>
             </div>
         )
     },
@@ -243,7 +243,7 @@ export default function HelpPage() {
                             </p>
                             <div className="space-y-4">
                                 <div className="flex items-center gap-3 text-sm text-white/70">
-                                    <IoMail className="text-blue-400" size={18} /> support@snipp.com
+                                    <IoMail className="text-blue-400" size={18} /> support@assessiq.com
                                 </div>
                                 <div className="flex items-center gap-3 text-sm text-white/70">
                                     <IoTicket className="text-purple-400" size={18} /> API Issues: Priority 1

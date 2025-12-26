@@ -19,7 +19,7 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: 'Snipp - Next Generation Assessment Platform',
+  title: 'AssessIQ - Next Generation Assessment Platform',
   keywords: 'AI, interview, website, service',
   description: 'Interview and Assessment with Monaco',
 }

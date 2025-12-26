@@ -46,7 +46,7 @@ const integrations: Integration[] = [
         bg: "from-orange-900/50 to-orange-950/30",
         details: {
             title: "The Reactive Database for App Development",
-            overview: "Convex replaces the traditional glue code of databases, servers, and cache invalidation. It allows Snipp to function like a multiplayer game, where state changes are pushed to all clients instantly. This implies no stale data, ever.",
+            overview: "Convex replaces the traditional glue code of databases, servers, and cache invalidation. It allows AssessIQ to function like a multiplayer game, where state changes are pushed to all clients instantly. This implies no stale data, ever.",
             features: [
                 "Automatic caching and real-time subscriptions",
                 "ACID-compliant transactions",
@@ -71,7 +71,7 @@ const integrations: Integration[] = [
                 "Noise cancellation and echo reduction",
                 "Screen sharing and recording capabilities"
             ],
-            technical: "Snipp integrates Stream's React SDK to embed video directly into the interview workspace. This allows for a picture-in-picture mode and side-by-side coding without context switching, managed entirely by client-side hooks."
+            technical: "AssessIQ integrates Stream's React SDK to embed video directly into the interview workspace. This allows for a picture-in-picture mode and side-by-side coding without context switching, managed entirely by client-side hooks."
         }
     },
     {
@@ -131,7 +131,7 @@ export default function IntegrationsPage() {
                         transition={{ delay: 0.1 }}
                         className="text-xl text-white/50 leading-relaxed"
                     >
-                        Snipp plays nice with the tools you already love. Streamline your hiring process by connecting your favorite platforms.
+                        AssessIQ plays nice with the tools you already love. Streamline your hiring process by connecting your favorite platforms.
                     </motion.p>
                 </div>
 
